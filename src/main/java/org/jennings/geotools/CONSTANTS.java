@@ -19,6 +19,8 @@
 
 package org.jennings.geotools;
 
+import java.text.DecimalFormat;
+
 /**
  *
  * @author david
@@ -31,6 +33,10 @@ public final class CONSTANTS {
     
     public static final double D2R = Math.PI / 180.0;
     public static final double R2D = 180.0 / Math.PI;    
+    
+    private final static DecimalFormat DF8 = new DecimalFormat("###0.00000000");
+    private final static DecimalFormat DF5 = new DecimalFormat("###0.00000");
+    private final static DecimalFormat DF3  = new DecimalFormat("###0.000");
     
     public static final double EARTH_RADIUS = 6371000.0;  //km
     public static final double EARTH_RADIUS_EQUITORIAL = 6378137.0;  //km

@@ -21,7 +21,6 @@ package org.jennings.geotools;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.Random;
 
 /**
  *
@@ -34,14 +33,8 @@ import java.util.Random;
  */
 public class GreatCircle {
 
-    private final double D2R = Math.PI / 180.0;
-    private final double R2D = 180.0 / Math.PI;
 
-    private final static DecimalFormat DF8 = new DecimalFormat("###0.00000000");
-    private final static DecimalFormat DF5 = new DecimalFormat("###0.00000");
-    private final static DecimalFormat DF3  = new DecimalFormat("###0.000");
-
-    final boolean debug = false;
+    final boolean debug = CONSTANTS.debug;
 
     /**
      * 
@@ -76,10 +69,10 @@ public class GreatCircle {
 
         try {
 
-            double lon1R = lon1 * D2R;
-            double lat1R = lat1 * D2R;
-            double lon2R = lon2 * D2R;
-            double lat2R = lat2 * D2R;
+            double lon1R = lon1 * CONSTANTS.D2R;
+            double lat1R = lat1 * CONSTANTS.D2R;
+            double lon2R = lon2 * CONSTANTS.D2R;
+            double lat2R = lat2 * CONSTANTS.D2R;
 
             /*
             Functions are a little whacky around the north and south pole.
@@ -89,13 +82,13 @@ public class GreatCircle {
             if (Math.abs(lat1 - 90.0) < 0.00001) {
                 // very close to north pole distance R * theta            
                 double l = 90.0 - lat2;
-                gcDist = CONSTANTS.EARTH_RADIUS * l * D2R / 1000.0;
+                gcDist = CONSTANTS.EARTH_RADIUS * l * CONSTANTS.D2R / 1000.0;
                 // let bearing in lon2
                 bearing = lon2;
             } else if (Math.abs(lat1 + 90) < 0.00001) {
                 // very close to south pole distance R * theta
                 double l = lat2 + 90.0;
-                gcDist = CONSTANTS.EARTH_RADIUS * l * D2R / 1000.0;
+                gcDist = CONSTANTS.EARTH_RADIUS * l * CONSTANTS.D2R / 1000.0;
                 bearing = lon2;
 
             } else {
@@ -124,7 +117,7 @@ public class GreatCircle {
 
                 double y3 = Math.atan2(y1, y2);
 
-                bearing = (y3 * R2D) % 360;
+                bearing = (y3 * CONSTANTS.R2D) % 360;
 
                 // Convert to value from -180 to 180
                 bearing = bearing > 180.0 ? bearing - 360.0 : bearing;
@@ -207,41 +200,41 @@ public class GreatCircle {
                 lon2 = hdng;
                 alpha = dist / CONSTANTS.EARTH_RADIUS;
                 if (lat1 == 90) {
-                    lat2 = 90 - alpha * R2D;
+                    lat2 = 90 - alpha * CONSTANTS.R2D;
                 } else {
-                    lat2 = -90 + alpha * R2D;
+                    lat2 = -90 + alpha * CONSTANTS.R2D;
                 }
 
             } else if (hdng == 0 || hdng == 360) {
                 // going due north within some rounded number
                 alpha = dist / CONSTANTS.EARTH_RADIUS;
-                lat2 = lat1 + alpha * R2D;
+                lat2 = lat1 + alpha * CONSTANTS.R2D;
                 lon2 = lon1;
             } else if (hdng == 180) {
                 // going due south witin some rounded number
                 alpha = dist / CONSTANTS.EARTH_RADIUS;
-                lat2 = lat1 - alpha * R2D;
+                lat2 = lat1 - alpha * CONSTANTS.R2D;
                 lon2 = lon1;
             } else if (hdng == 90) {
                 lat2 = lat1;
                 l = 90 - lat1;
-                alpha = dist / CONSTANTS.EARTH_RADIUS / Math.sin(l * D2R);
+                alpha = dist / CONSTANTS.EARTH_RADIUS / Math.sin(l * CONSTANTS.D2R);
                 //phi = Math.asin(Math.sin(alpha)/ Math.sin(l*D2R));                 
-                lon2 = lon1 + alpha * R2D;
+                lon2 = lon1 + alpha * CONSTANTS.R2D;
             } else if (hdng == 270) {
                 lat2 = lat1;
                 l = 90 - lat1;
-                alpha = dist / CONSTANTS.EARTH_RADIUS / Math.sin(l * D2R);
+                alpha = dist / CONSTANTS.EARTH_RADIUS / Math.sin(l * CONSTANTS.D2R);
                 //phi = Math.asin(Math.sin(alpha)/ Math.sin(l*D2R));                       
-                lon2 = lon1 - alpha * R2D;
+                lon2 = lon1 - alpha * CONSTANTS.R2D;
             } else if (hdng > 0 && hdng < 180) {
                 l = 90 - lat1;
                 alpha = dist / CONSTANTS.EARTH_RADIUS;
-                k = Math.acos(Math.cos(alpha) * Math.cos(l * D2R)
-                        + Math.sin(alpha) * Math.sin(l * D2R) * Math.cos(hdng * D2R));
-                lat2 = 90 - k * R2D;
-                double n = (Math.cos(alpha) - Math.cos(k) * Math.cos(l * D2R))
-                        / (Math.sin(k) * Math.sin(l * D2R));
+                k = Math.acos(Math.cos(alpha) * Math.cos(l * CONSTANTS.D2R)
+                        + Math.sin(alpha) * Math.sin(l * CONSTANTS.D2R) * Math.cos(hdng * CONSTANTS.D2R));
+                lat2 = 90 - k * CONSTANTS.R2D;
+                double n = (Math.cos(alpha) - Math.cos(k) * Math.cos(l * CONSTANTS.D2R))
+                        / (Math.sin(k) * Math.sin(l * CONSTANTS.D2R));
                 if (n > 1) {
                     n = 1;
                 }
@@ -249,18 +242,18 @@ public class GreatCircle {
                     n = -1;
                 }
                 phi = Math.acos(n);
-                lon2 = lon1 + phi * R2D;
-                theta = Math.sin(phi) * Math.sin(l * D2R) / Math.sin(alpha);
-                hdng2 = 180 - theta * R2D;
+                lon2 = lon1 + phi * CONSTANTS.R2D;
+                theta = Math.sin(phi) * Math.sin(l * CONSTANTS.D2R) / Math.sin(alpha);
+                hdng2 = 180 - theta * CONSTANTS.R2D;
             } else if (hdng > 180 && hdng < 360) {
                 gamma = 360 - hdng;
                 l = 90 - lat1;
                 alpha = dist / CONSTANTS.EARTH_RADIUS;
-                k = Math.acos(Math.cos(alpha) * Math.cos(l * D2R)
-                        + Math.sin(alpha) * Math.sin(l * D2R) * Math.cos(gamma * D2R));
-                lat2 = 90 - k * R2D;
-                double n = (Math.cos(alpha) - Math.cos(k) * Math.cos(l * D2R))
-                        / (Math.sin(k) * Math.sin(l * D2R));
+                k = Math.acos(Math.cos(alpha) * Math.cos(l * CONSTANTS.D2R)
+                        + Math.sin(alpha) * Math.sin(l * CONSTANTS.D2R) * Math.cos(gamma * CONSTANTS.D2R));
+                lat2 = 90 - k * CONSTANTS.R2D;
+                double n = (Math.cos(alpha) - Math.cos(k) * Math.cos(l * CONSTANTS.D2R))
+                        / (Math.sin(k) * Math.sin(l * CONSTANTS.D2R));
                 if (n > 1) {
                     n = 1;
                 }
@@ -268,9 +261,9 @@ public class GreatCircle {
                     n = -1;
                 }
                 phi = Math.acos(n);
-                lon2 = lon1 - phi * R2D;
-                theta = Math.sin(phi) * Math.sin(l * D2R) / Math.sin(alpha);
-                hdng2 = 180 - theta * R2D;
+                lon2 = lon1 - phi * CONSTANTS.R2D;
+                theta = Math.sin(phi) * Math.sin(l * CONSTANTS.D2R) / Math.sin(alpha);
+                hdng2 = 180 - theta * CONSTANTS.R2D;
             }
 
             int decimalPlaces = 12;
@@ -343,15 +336,47 @@ public class GreatCircle {
    
 
     public static void main(String[] args) {
-
-        GreatCircle gc = new GreatCircle();
-
-        GeographicCoordinate coord1 = new GeographicCoordinate(0,0);
-        GeographicCoordinate coord2 = new GeographicCoordinate(1,1);
         
-        DistanceBearing distB = gc.getDistanceBearing(coord1, coord2);
-        System.out.println(distB.getDistance());        
- 
+        // Example Command Line args: localhost 5565 faa-stream.csv 1000 10000
+        int numargs = args.length;
+        if (numargs != 5) {
+            // append append time option was added to support end-to-end latency; I used it for Trinity testing
+            System.err.println("Usage: GreatCircle newpt <lon> <lat> <dist> <bearing>");
+            System.err.println("Usage: GreatCircle distb <lon1> <lat1> <lon2> <lat2>");
+        } else {
+
+            GreatCircle gc = new GreatCircle();
+            String req = args[0];
+            
+            if (req.equalsIgnoreCase("newpt")) {
+                double lon = Double.parseDouble(args[1]);
+                double lat = Double.parseDouble(args[2]);
+                double dist = Double.parseDouble(args[3]);
+                double bear = Double.parseDouble(args[4]);
+                
+                GeographicCoordinate pt = gc.getNewCoordPair(lon, lat, dist, bear);
+                System.out.println(String.format("%.5f", pt.getLon()) + "," + String.format("%.5f", pt.getLat()));
+                
+                
+            } else if (req.equalsIgnoreCase("distb")) {
+                double lon1 = Double.parseDouble(args[1]);
+                double lat1 = Double.parseDouble(args[2]);
+                double lon2 = Double.parseDouble(args[3]);
+                double lat2 = Double.parseDouble(args[4]);
+                
+                GeographicCoordinate pt1 = new GeographicCoordinate(lon1, lat1);
+                GeographicCoordinate pt2 = new GeographicCoordinate(lon2, lat2);
+
+                DistanceBearing db = gc.getDistanceBearing(pt1, pt2);
+                System.out.println(String.format("%.0f", db.getDistance()) + "," + String.format("%.2f",db.getBearing()));
+
+                
+                
+            } else {
+                System.out.println("First parameter must be newpt or distb");
+            }
+
+        }
     }
 
 }
