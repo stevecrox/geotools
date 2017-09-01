@@ -1,5 +1,5 @@
 /*
- * (C) Copyright ${year} Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 David Jennings
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
