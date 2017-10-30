@@ -31,7 +31,7 @@ import org.json.JSONObject;
 public class Ellipse {
 
     final boolean debug = CONSTANTS.debug;
-
+    
     /**
      *
      * Will not work for Ellipses where semi-major axis is greater than half
@@ -470,7 +470,7 @@ public class Ellipse {
             while (j < 2) {
                 System.out.println("exteriorRing[" + j + "]");
                 i = 0;
-                
+
                 while (i < exteriorRing[j].length()) {
                     System.out.println(exteriorRing[j].get(i));
                     i++;
@@ -483,10 +483,101 @@ public class Ellipse {
 
     }
 
-    public void createGeojsonTest(double lon, double lat, double a, double b, double rot, int numPoints) {
-        GreatCircle gc = new GreatCircle();
+    public String createEsrijsonEllipse(int id, double lon, double lat, double a, double b, double rot, int numPoints) {
 
-        Attributes at = new Attributes();
+        Ellipse el = new Ellipse();
+
+        // Clockwise Poly
+        JSONArray polys = new JSONArray();
+        polys = el.createEllipse(lon, lat, a, b, rot, numPoints, true);
+
+        JSONArray rngs = new JSONArray();
+        rngs.put(polys.getJSONArray(0).getJSONArray(0));
+        try {
+            rngs.put(polys.getJSONArray(1).getJSONArray(0));
+        } catch (Exception e) {
+            // ok to ignore
+        }
+        JSONObject geom = new JSONObject();
+        geom.put("rings", rngs);
+
+        JSONObject esriJson = new JSONObject();
+        esriJson.put("a", a);
+        esriJson.put("b", b);
+        esriJson.put("rot", rot);
+        esriJson.put("clon", lon);
+        esriJson.put("clat", lat);
+        esriJson.put("geometry", geom);
+
+        return esriJson.toString();
+    }
+
+    public String createWktEllipse(int id, double lon, double lat, double a, double b, double rot, int numPoints) {
+        
+        
+        JSONArray polys = createEllipse(lon, lat, a, b, rot, numPoints, false);
+        
+        int numPolys = polys.length();
+        
+        String wktString = "";
+        
+        if (numPolys == 1) {
+            // Polygon
+            wktString = "POLYGON ((";
+            JSONArray ring = polys.getJSONArray(0).getJSONArray(0);
+            int numPts = ring.length();
+            //System.out.println("numPts:" + numPts);
+            int cnt = 0;
+            while (cnt < numPts) {
+                JSONArray pt = ring.getJSONArray(cnt);
+                //System.out.println(pt);
+                wktString += String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1));
+                cnt++;
+                if (cnt < numPts) {
+                    wktString += ",";
+                }                
+            }            
+            wktString += "))";
+        } else {
+            // Multipolygon
+            wktString = "MULTIPOLYGON (";
+            
+            int cntPoly = 0;
+            while (cntPoly < numPolys) {
+                JSONArray ring = polys.getJSONArray(cntPoly).getJSONArray(0);
+                int numPts = ring.length();                
+                int cntPt = 0;
+                wktString += "((";
+                while (cntPt < numPts) {
+                    JSONArray pt = ring.getJSONArray(cntPt);
+                    //System.out.println(pt);
+                    wktString += String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1));
+                    cntPt++;
+                    if (cntPt < numPts) {
+                        wktString += ",";
+                    }                
+                }
+                wktString += "))";
+                cntPoly++;
+                if (cntPoly < numPolys) {
+                    wktString += ",";
+                }                               
+            }
+            
+            wktString += ")";
+        }
+        System.out.println(numPolys);
+        
+        
+        
+        
+        return wktString;
+        
+    }
+    
+    
+    public String createGeoJsonEllipse(int id, double lon, double lat, double a, double b, double rot, int numPoints) {
+
 
         JSONObject featureCollection = new JSONObject();
         featureCollection.put("type", "FeatureCollection");
@@ -497,7 +588,12 @@ public class Ellipse {
         feature.put("type", "Feature");
 
         // Add properties (At least one is required)
-        JSONObject properties = at.generateAttributes(1, lon, lat, a);
+        JSONObject properties = new JSONObject();
+        properties.put("a", a);
+        properties.put("b", b);
+        properties.put("rot", rot);
+        properties.put("clon", lon);
+        properties.put("clat", lat);
         feature.put("properties", properties);
 
         // Get the coordinates
@@ -512,14 +608,43 @@ public class Ellipse {
         features.put(feature);
         featureCollection.put("features", features);
 
-        System.out.println(featureCollection.toString());
+        return featureCollection.toString();
     }
+    
 
+
+    public String createEllipse(int id, double lon, double lat, double a, double b, double rot, int numPoints, GeomType geomType) {
+        switch (geomType) {
+            case EsriJson:
+                return createEllipse(lon, lat, a, b, rot, numPoints, true).toString();
+            case GeoJson:      
+                return createEllipse(lon, lat, a, b, rot, numPoints, false).toString();
+            case Wkt:      
+                return createWktEllipse(id, lon, lat, a, b, rot, numPoints);
+        }
+        return null;
+        
+    }
+    
     public static void main(String args[]) {
+        // GeoJSON Lint:  http://geojsonlint.com/
+        // Wkt Lint: http://arthur-e.github.io/Wicket/sandbox-gmaps3.html
+        
+        // Need to fix so that EsriJson returns Geom correctly
+        
+        
+        // Random polys in grids (e.g. landgrids.csv)
+        // Polys in fixed pattern 1 meter circle every 1km 
+        
         Ellipse t = new Ellipse();
-        //t.createGeojsonTest(0, 0, 400, 100, 45, 100);
-        t.createGeojsonTest(-179, 85, 400, 100, 45, 100);
-
+        System.out.println(t.createEllipse(1, 0, 0, 400, 100, 45, 50, GeomType.GeoJson));
+        System.out.println(t.createEllipse(1, 0, 0, 400, 100, 45, 50, GeomType.EsriJson));
+        System.out.println(t.createEllipse(1, 0, 0, 400, 100, 45, 50, GeomType.Wkt));
+        System.out.println();
+        System.out.println(t.createEllipse(1, 10, 10, 400, 100, 45, 50, GeomType.GeoJson));
+        System.out.println(t.createEllipse(1, 10, 10, 400, 100, 45, 50, GeomType.EsriJson));   
+        System.out.println(t.createEllipse(1, 10, 10, 400, 100, 45, 50, GeomType.Wkt));
+        
     }
 
 }
