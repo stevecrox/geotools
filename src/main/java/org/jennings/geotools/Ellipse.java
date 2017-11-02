@@ -440,8 +440,6 @@ public class Ellipse {
         JSONArray polys = new JSONArray();
         JSONArray poly = new JSONArray();
 
-        double plon = clon;
-        double plat = clat;
 
         for (i = 0; i < 2; i++) {
             poly = new JSONArray();
@@ -457,11 +455,12 @@ public class Ellipse {
                         reversedPoly.put(exteriorRing[i].get(j));
                         j--;
                     }
-                    poly.put(reversedPoly);
+                    polys.put(reversedPoly);
                 } else {
                     poly.put(exteriorRing[i]);
+                    polys.put(poly);
                 }
-                polys.put(poly);
+                
             }
         }
 
@@ -512,7 +511,7 @@ public class Ellipse {
         return esriJson.toString();
     }
 
-    public String createWktEllipse(int id, double lon, double lat, double a, double b, double rot, int numPoints) {
+    public String createWktEllipse(double lon, double lat, double a, double b, double rot, int numPoints) {
         
         
         JSONArray polys = createEllipse(lon, lat, a, b, rot, numPoints, false);
@@ -620,7 +619,7 @@ public class Ellipse {
             case GeoJson:      
                 return createEllipse(lon, lat, a, b, rot, numPoints, false).toString();
             case Wkt:      
-                return createWktEllipse(id, lon, lat, a, b, rot, numPoints);
+                return createWktEllipse(lon, lat, a, b, rot, numPoints);
         }
         return null;
         

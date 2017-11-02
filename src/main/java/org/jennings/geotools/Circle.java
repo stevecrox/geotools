@@ -354,11 +354,12 @@ public class Circle {
                         reversedPoly.put(exteriorRing[i].get(j));
                         j--;
                     }
-                    poly.put(reversedPoly);
+                    polys.put(reversedPoly);
                 } else {
                     poly.put(exteriorRing[i]);
+                    polys.put(poly);
                 }
-                polys.put(poly);
+                
             }
         }
 
@@ -384,6 +385,69 @@ public class Circle {
 
     }
 
+    public String createWktCircle(double lon, double lat, double radius, int numPoints) {
+        
+        
+        JSONArray polys = createCircle(lon, lat, radius, numPoints, false);
+        
+        int numPolys = polys.length();
+        
+        String wktString = "";
+        
+        if (numPolys == 1) {
+            // Polygon
+            wktString = "POLYGON ((";
+            JSONArray ring = polys.getJSONArray(0).getJSONArray(0);
+            int numPts = ring.length();
+            //System.out.println("numPts:" + numPts);
+            int cnt = 0;
+            while (cnt < numPts) {
+                JSONArray pt = ring.getJSONArray(cnt);
+                //System.out.println(pt);
+                wktString += String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1));
+                cnt++;
+                if (cnt < numPts) {
+                    wktString += ",";
+                }                
+            }            
+            wktString += "))";
+        } else {
+            // Multipolygon
+            wktString = "MULTIPOLYGON (";
+            
+            int cntPoly = 0;
+            while (cntPoly < numPolys) {
+                JSONArray ring = polys.getJSONArray(cntPoly).getJSONArray(0);
+                int numPts = ring.length();                
+                int cntPt = 0;
+                wktString += "((";
+                while (cntPt < numPts) {
+                    JSONArray pt = ring.getJSONArray(cntPt);
+                    //System.out.println(pt);
+                    wktString += String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1));
+                    cntPt++;
+                    if (cntPt < numPts) {
+                        wktString += ",";
+                    }                
+                }
+                wktString += "))";
+                cntPoly++;
+                if (cntPoly < numPolys) {
+                    wktString += ",";
+                }                               
+            }
+            
+            wktString += ")";
+        }
+        if (debug) System.out.println(numPolys);
+        
+        
+        
+        
+        return wktString;
+        
+    }    
+    
 
 
     public void createEsriTest(double lon, double lat, double size, int numPoints) {
@@ -447,9 +511,31 @@ public class Circle {
 
     }
 
+    public String createCircle(double lon, double lat, double radius, int numPoints, GeomType geomType) {
+        switch (geomType) {
+            case EsriJson:
+                return createCircle(lon, lat, radius, numPoints, true).toString();
+            case GeoJson:      
+                return createCircle(lon, lat, radius, numPoints, false).toString();
+            case Wkt:      
+                return createWktCircle(lon, lat, radius, numPoints);
+        }
+        return null;
+        
+    }    
+    
     public static void main(String args[]) {
         Circle t = new Circle();
-        t.createGeojsonTest(0, 0, 300, 100);
+        System.out.println(t.createCircle(0, 0, 400, 50, GeomType.GeoJson));
+        System.out.println(t.createCircle(0, 0, 400, 50, GeomType.EsriJson));
+        System.out.println(t.createCircle(0, 0, 400, 50, GeomType.Wkt));
+        
+        System.out.println();
+        System.out.println(t.createCircle(10, 10, 400, 50, GeomType.GeoJson));
+        System.out.println(t.createCircle(10, 10, 400, 50, GeomType.EsriJson));
+        System.out.println(t.createCircle(10, 10, 400, 50, GeomType.Wkt));      
+        
+        //t.createGeojsonTest(0, 0, 300, 100);
         //t.createEsriTest(0, 0, 300, 100);
     }
     
