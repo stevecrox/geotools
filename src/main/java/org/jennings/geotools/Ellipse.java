@@ -30,7 +30,7 @@ import org.json.JSONObject;
  */
 public class Ellipse {
 
-    final boolean debug = CONSTANTS.debug;
+    static final boolean debug = CONSTANTS.debug;
     
     /**
      *
@@ -438,7 +438,7 @@ public class Ellipse {
         }
 
         JSONArray polys = new JSONArray();
-        JSONArray poly = new JSONArray();
+        JSONArray poly;
 
 
         for (i = 0; i < 2; i++) {
@@ -487,7 +487,7 @@ public class Ellipse {
         Ellipse el = new Ellipse();
 
         // Clockwise Poly
-        JSONArray polys = new JSONArray();
+        JSONArray polys;
         polys = el.createEllipse(lon, lat, a, b, rot, numPoints, true);
 
         JSONArray rngs = new JSONArray();
@@ -518,11 +518,11 @@ public class Ellipse {
         
         int numPolys = polys.length();
         
-        String wktString = "";
+        StringBuffer buf = new StringBuffer();
         
         if (numPolys == 1) {
             // Polygon
-            wktString = "POLYGON ((";
+            buf.append("POLYGON ((");
             JSONArray ring = polys.getJSONArray(0).getJSONArray(0);
             int numPts = ring.length();
             //System.out.println("numPts:" + numPts);
@@ -530,47 +530,47 @@ public class Ellipse {
             while (cnt < numPts) {
                 JSONArray pt = ring.getJSONArray(cnt);
                 //System.out.println(pt);
-                wktString += String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1));
+                buf.append(String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1)));
                 cnt++;
                 if (cnt < numPts) {
-                    wktString += ",";
+                    buf.append(",");
                 }                
             }            
-            wktString += "))";
+            buf.append("))");
         } else {
             // Multipolygon
-            wktString = "MULTIPOLYGON (";
+            buf.append("MULTIPOLYGON (");
             
             int cntPoly = 0;
             while (cntPoly < numPolys) {
                 JSONArray ring = polys.getJSONArray(cntPoly).getJSONArray(0);
                 int numPts = ring.length();                
                 int cntPt = 0;
-                wktString += "((";
+                buf.append("((");
                 while (cntPt < numPts) {
                     JSONArray pt = ring.getJSONArray(cntPt);
                     //System.out.println(pt);
-                    wktString += String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1));
+                    buf.append(String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1)));
                     cntPt++;
                     if (cntPt < numPts) {
-                        wktString += ",";
+                        buf.append(",");
                     }                
                 }
-                wktString += "))";
+                buf.append("))");
                 cntPoly++;
                 if (cntPoly < numPolys) {
-                    wktString += ",";
+                    buf.append(",");
                 }                               
             }
             
-            wktString += ")";
+            buf.append(")");
         }
         System.out.println(numPolys);
         
         
         
         
-        return wktString;
+        return buf.toString();
         
     }
     

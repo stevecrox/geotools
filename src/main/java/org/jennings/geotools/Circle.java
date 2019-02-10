@@ -29,7 +29,7 @@ import org.json.JSONObject;
  */
 public class Circle {
 
-    final boolean debug = CONSTANTS.debug;
+    final static boolean debug = CONSTANTS.debug;
 
     /**
      * Return geometry object rings for Esri or coordinates for GeoJSON
@@ -392,11 +392,11 @@ public class Circle {
         
         int numPolys = polys.length();
         
-        String wktString = "";
+        StringBuffer buf = new StringBuffer();
         
         if (numPolys == 1) {
             // Polygon
-            wktString = "POLYGON ((";
+            buf.append("POLYGON ((");
             JSONArray ring = polys.getJSONArray(0).getJSONArray(0);
             int numPts = ring.length();
             //System.out.println("numPts:" + numPts);
@@ -404,54 +404,52 @@ public class Circle {
             while (cnt < numPts) {
                 JSONArray pt = ring.getJSONArray(cnt);
                 //System.out.println(pt);
-                wktString += String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1));
+                buf.append(String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1)));
                 cnt++;
                 if (cnt < numPts) {
-                    wktString += ",";
+                    buf.append(",");
                 }                
             }            
-            wktString += "))";
+            buf.append("))");
         } else {
             // Multipolygon
-            wktString = "MULTIPOLYGON (";
+            buf.append("MULTIPOLYGON (");
             
             int cntPoly = 0;
             while (cntPoly < numPolys) {
                 JSONArray ring = polys.getJSONArray(cntPoly).getJSONArray(0);
                 int numPts = ring.length();                
                 int cntPt = 0;
-                wktString += "((";
+                buf.append("((");
                 while (cntPt < numPts) {
                     JSONArray pt = ring.getJSONArray(cntPt);
                     //System.out.println(pt);
-                    wktString += String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1));
+                    buf.append(String.valueOf(pt.getDouble(0)) + " " + String.valueOf(pt.getDouble(1)));
                     cntPt++;
                     if (cntPt < numPts) {
-                        wktString += ",";
+                        buf.append(",");
                     }                
                 }
-                wktString += "))";
+                buf.append("))");
                 cntPoly++;
                 if (cntPoly < numPolys) {
-                    wktString += ",";
+                    buf.append(",");
                 }                               
             }
             
-            wktString += ")";
+            buf.append(")");
         }
         if (debug) System.out.println(numPolys);
+                
         
-        
-        
-        
-        return wktString;
+        return buf.toString();
         
     }    
     
 
 
     public void createEsriTest(double lon, double lat, double size, int numPoints) {
-        GreatCircle gc = new GreatCircle();
+//        GreatCircle gc = new GreatCircle();
         Attributes at = new Attributes();
 
         JSONArray features = new JSONArray();
@@ -480,7 +478,7 @@ public class Circle {
     }
 
     public void createGeojsonTest(double lon, double lat, double size, int numPoints) {
-        GreatCircle gc = new GreatCircle();
+//        GreatCircle gc = new GreatCircle();
         Attributes at = new Attributes();
 
         JSONObject featureCollection = new JSONObject();
