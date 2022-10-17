@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd">
+
+    <edit>${project.scm.url}</edit>
+
+    <skin>
+        <groupId>io.github.stevecrox.maven.skins</groupId>
+        <artifactId>bootstrap-site-skin</artifactId>
+        <version>1.0.8</version>
+    </skin>
+
+    <custom>
+        <bootstrapSkin>
+            <gitHub>
+                <projectId>stevecrox/geotools</projectId>
+            </gitHub>
+            <navbar>
+                <icon>
+                    <href>${project.url}</href>
+                </icon>
+            </navbar>
+        </bootstrapSkin>
+    </custom>
+
+    <body>
+        <menu ref="parent"/>
+        <menu ref="reports"/>
+        <menu ref="modules"/>
+    </body>
+</project>
