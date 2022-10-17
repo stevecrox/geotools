@@ -5,6 +5,12 @@
     <artifactId>geotools</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <name>Geo Tools</name>
+    <description>Uses Great Circle code to create circle and ellipse polygons (geojson or Esri).</description>
+    <url>https://david618.github.io/geotools/</url>
+    <inceptionYear>2017</inceptionYear>
+
     <dependencies>
         <dependency>
             <groupId>org.json</groupId>
@@ -13,6 +19,7 @@
             <type>jar</type>
         </dependency>
     </dependencies>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -20,7 +27,52 @@
         <!-- Required for the release and push to Maven Central. -->
         <releaseVersion />
     </properties>
-    
+
+    <scm>
+        <connection>scm:git:https://github.com/david618/geotools.git</connection>
+        <developerConnection>scm:git:https://github.com/david618/geotools.git</developerConnection>
+        <url>https://github.com/david618/geotools</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/david618/geotools/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>main</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <site>
+            <id>site</id>
+            <url>./</url>
+        </site>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <name>David Jennings</name>
+        </developer>
+        <developer>
+            <name>Stephen Crocker</name>
+            <email>stevecrox AT hotmail DOT com DOT br</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <build>
         <finalName>geotools</finalName>
 
