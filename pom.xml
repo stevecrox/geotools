@@ -89,18 +89,6 @@
                     </archive>
                 </configuration>
             </plugin>
-
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.12.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.4.1</version>
-            </plugin>
         </plugins>
         
         <pluginManagement>
@@ -113,6 +101,11 @@
                         <xmlOutput>true</xmlOutput>
                         <xmlOutputDirectory>target/site</xmlOutputDirectory>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.4.1</version>
                 </plugin>
                 <!-- Apache Maven Release Plugin Definitions. -->
                 <plugin>
@@ -147,6 +140,34 @@
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <tagNameFormat>v${releaseVersion}</tagNameFormat>
+                    </configuration>
+                </plugin>
+                <!-- Maven Site Documentation changes. -->
+                <!-- Apache Maven Reporting Plugin Definitions. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.12.1</version>
+                    <configuration>
+                        <pomPackagingOnly>false</pomPackagingOnly>
+                        <topSiteURL>${project.url}</topSiteURL>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-descriptor</id>
+                            <goals>
+                                <goal>attach-descriptor</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-publish-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <checkinComment>Updating Site documentation</checkinComment>
+                        <serverId>site</serverId>
                     </configuration>
                 </plugin>
             </plugins>
