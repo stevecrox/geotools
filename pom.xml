@@ -59,11 +59,14 @@
         <developer>
             <name>David Jennings</name>
         </developer>
-        <developer>
+    </developers>
+
+    <contributors>
+        <contributor>
             <name>Stephen Crocker</name>
             <email>stevecrox AT hotmail DOT com DOT br</email>
-        </developer>
-    </developers>
+        </contributor>
+    </contributors>
 
     <licenses>
         <license>
