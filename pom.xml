@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.stevecrox</groupId>
         <artifactId>maven-parent</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
 
     <groupId>io.github.stevecrox.geo</groupId>
@@ -34,6 +34,7 @@
             <name>David Jennings</name>
         </developer>
     </developers>
+
     <contributors>
         <contributor>
             <name>Stephen Crocker</name>
