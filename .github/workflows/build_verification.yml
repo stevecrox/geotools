@@ -49,26 +49,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.SCM_TOKEN }}
           GPG_KEY_ID: ${{ secrets.GPG_PRIVATE_KEYNAME }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Checkstyle analyse
-        uses: dbelyaev/action-checkstyle@v0.5.1
-        with:
-          github_token: ${{ secrets.SCM_TOKEN }}
-          reporter: github-pr-review
-          level: warning
-          
-      - name: SpotBugs
-        run: mvn --batch-mode com.github.spotbugs:spotbugs-maven-plugin:4.6.0.0:spotbugs -Dspotbugs.xmlOutput=true -Dspotbugs.effort=max -Dspotbugs.failOnError=false -Dspotbugs.threshold=low
-        env:
-          OSSRH_USER: ${{ secrets.OSSRH_USER }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          GITHUB_USER: ${{ secrets.SCM_USER }}
-          GITHUB_TOKEN: ${{ secrets.SCM_TOKEN }}
-          GPG_KEY_ID: ${{ secrets.GPG_PRIVATE_KEYNAME }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
-          
-      - name: SpotBugs Annotation
-        uses: jwgmeligmeyling/spotbugs-github-action@master
-        with:
-          path: '**/spotbugsXml.xml'
-          token: ${{ secrets.SCM_TOKEN }}
