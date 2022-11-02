@@ -20,16 +20,20 @@ jobs:
           passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
       
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
-          java-version: 17
+          cache: 'maven'
+          distribution: 'zulu'
+          java-version: 11
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
 
       - name: Cache Maven packages
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven
+          restore-keys: ${{ runner.os }}-maven-
 
       - name: Extract branch name
         id: extract_branch
@@ -41,7 +45,11 @@ jobs:
         run: git config --global user.email "stevecrox@hotmail.com"
       - name: Setup Git User
         run: git config --global user.name "GitHub Action"
-
+      - name: Setup GPG Autosign
+        run: git config --global commit.gpgsign true
+      - name: Setup GPG Autosign Key
+        run: git config --global user.signingkey ${{ secrets.GPG_PRIVATE_KEYNAME }}
+        
       - name: Prepare Release with Maven
         if: ${{ contains(github.ref, 'refs/heads/release') }}
         run: mvn --batch-mode --settings .github/maven_settings.xml release:prepare -DreleaseVersion=${{ env.BRANCH_NAME }} -Dgoals=clean,install -DreleaseProfiles=release
