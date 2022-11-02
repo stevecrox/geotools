@@ -14,7 +14,7 @@
 
     <name>Geo Tools</name>
     <description>Uses Great Circle code to create circle and ellipse polygons (geojson or Esri).</description>
-    <url>https://github.com/stevecrox/geotools</url>
+    <url>https://stevecrox.github.io/geotools/</url>
     <inceptionYear>2017</inceptionYear>
 
     <scm>
