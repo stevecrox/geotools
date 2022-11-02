@@ -46,7 +46,7 @@ jobs:
       - name: Setup Git User
         run: git config --global user.name "GitHub Action"
       - name: Setup GPG Autosign
-        run: git config --global commit.gpgsign true
+        run: git config --global commit.gpgsign false
       - name: Setup GPG Autosign Key
         run: git config --global user.signingkey ${{ secrets.GPG_PRIVATE_KEYNAME }}
         
